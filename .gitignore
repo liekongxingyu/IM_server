@@ -1,0 +1,93 @@
+# General
+.DS_Store
+Thumbs.db
+*.swp
+*~
+*.log
+
+.idea/
+
+# Android
+.gradle/
+build/
+local.properties
+*.iml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/libraries/
+captures/
+.externalNativeBuild/
+
+# Xcode / macOS
+*.mode1v3
+*.mode2v3
+*.pbuser
+*.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+Pods/
+.AppleDouble
+.LSOverride
+
+# C++ Server (CMake & Make)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+install_manifest.txt
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+# Ignore potential build directories if created in source
+server/build/
+# Executables (generic rule, might need refinement)
+*.out
+*.exe
+
+# Windows Client (Visual Studio)
+.vs/
+Debug/
+Release/
+x64/
+x86/
+*.suo
+*.user
+*.pdb
+*.ipch
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+*.sty
+*.exporter
+*.tlog
+
+# PHP
+php/vendor/
+php/composer.lock
+php/application/cache/*
+!php/application/cache/index.html
+php/application/logs/*
+!php/application/logs/index.html
+
+# Node.js (if applicable)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Project Specific
+# Ignore generated binaries in win-client/bin if they are not committed
+win-client/bin/*.exe
+win-client/bin/*.pdb
+
+# Protocol Buffers generated files (if any, usually *.pb.h, *.pb.cc, *.java in specific dirs)
+# Assuming generation happens in place or build dir.

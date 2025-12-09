@@ -1,6 +1,6 @@
 /*================================================================
 *     Copyright (c) 2015年 lanhu. All rights reserved.
-*   
+*
 *   文件名称：Condition.h
 *   创 建 者：Zhang Yuanhao
 *   邮    箱：bluefoxah@gmail.com
@@ -18,7 +18,7 @@
 class CCondition
 {
 public:
-    CCondition(CLock* pLock);
+    CCondition(CLock *pLock);
     ~CCondition();
     void wait();
     /*
@@ -29,8 +29,9 @@ public:
     bool waitTime(uint64_t nWaitTime);
     void notify();
     void notifyAll();
+
 private:
-    CLock* m_pLock;
+    CLock *m_pLock;
     pthread_cond_t m_cond;
 };
 

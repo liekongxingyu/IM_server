@@ -23,7 +23,7 @@ public:
 	CBaseSocket();
 
 	virtual ~CBaseSocket();
-
+ 
 	SOCKET GetSocket() { return m_socket; }
 	void SetSocket(SOCKET fd) { m_socket = fd; }
 	void SetState(uint8_t state) { m_state = state; }

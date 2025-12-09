@@ -33,6 +33,7 @@ using namespace std;
 #define ERROR_CODE_WRONG_COMMAND_ID		3
 #define ERROR_CODE_ALLOC_FAILED			4
 
+// 描述Pdu异常
 class CPduException {
 public:
 	CPduException(uint32_t service_id, uint32_t command_id, uint32_t error_code, const char* error_msg)
@@ -64,6 +65,7 @@ private:
 	string		m_error_msg;
 };
 
+// 是一个可自动扩容的字节数组，用来接受和发送缓存
 class DLL_MODIFIER CSimpleBuffer
 {
 public:
@@ -83,6 +85,7 @@ private:
 	uint32_t	m_write_offset;
 };
 
+// 处理字节序
 class CByteStream
 {
 public:

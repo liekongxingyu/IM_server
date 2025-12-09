@@ -2,6 +2,9 @@
 #define __NETLIB_H__
 
 #include "ostype.h"
+// netlib.h 提供了一套跨平台、事件驱动的网络 API，把底层 select/epoll/kqueue 和 socket 管理封装起来；你只要注册回调并启动 eventloop，就能用 handle 来收发数据并处理各种网络事件、定时器和循环任务
+
+// 对之前basesocket和event类的封装
 
 #define NETLIB_OPT_SET_CALLBACK			1	
 #define NETLIB_OPT_SET_CALLBACK_DATA	2

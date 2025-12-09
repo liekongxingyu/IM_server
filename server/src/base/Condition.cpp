@@ -17,6 +17,7 @@ CCondition::CCondition(CLock* pLock):m_pLock(pLock)
     {
         assert(false);
     }
+    // 初始化
     pthread_cond_init(&m_cond, NULL);
 }
 CCondition::~CCondition()
@@ -46,10 +47,14 @@ bool CCondition::waitTime(uint64_t nWaitTime)
     }
     return true;
 }
+
+// 唤醒一个正在等待的线程
 void CCondition::notify()
 {
     pthread_cond_signal(&m_cond);
 }
+
+// 唤醒所有
 void CCondition::notifyAll()
 {
     pthread_cond_broadcast(&m_cond);

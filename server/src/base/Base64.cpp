@@ -89,7 +89,7 @@ string base64_decode(const string &ascdata)
         }
         accumulator = (accumulator << 6) | reverse_table[c];
         bits_collected += 6;
-        if (bits_collected >= 8)
+        if (bits_collected >= 8)  
         {
             bits_collected -= 8;
             retval += (char)((accumulator >> bits_collected) & 0xffu);

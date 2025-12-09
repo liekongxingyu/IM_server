@@ -10,7 +10,7 @@
 #pragma once
 ================================================================*/
 #ifndef __BASE64_H__
-#define __BASE64_H__
+#define __BASE64_H__ 
 #include <iostream>
 
 std::string base64_decode(const string &ascdata);

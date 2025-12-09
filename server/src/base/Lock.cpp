@@ -1,6 +1,6 @@
 /*================================================================
 *   Copyright (C) 2014 All rights reserved.
-*   
+*
 *   文件名称：Lock.cpp
 *   创 建 者：Zhang Yuanhao
 *   邮    箱：bluefoxah@gmail.com
@@ -17,7 +17,7 @@ CLock::CLock()
 #ifdef _WIN32
     InitializeCriticalSection(&m_critical_section);
 #else
-    pthread_mutex_init(&m_lock,NULL);
+    pthread_mutex_init(&m_lock, NULL);
 #endif
 }
 
@@ -91,13 +91,13 @@ bool CRWLock::try_wlock()
     return pthread_rwlock_trywrlock(&m_lock) == 0;
 }
 
-
-CAutoRWLock::CAutoRWLock(CRWLock* pLock, bool bRLock)
+CAutoRWLock::CAutoRWLock(CRWLock *pLock, bool bRLock)
 {
     m_pLock = pLock;
-    if(NULL != m_pLock)
+    if (NULL != m_pLock)
     {
-        if (bRLock) {
+        if (bRLock)
+        {
             m_pLock->rlock();
         }
         else
@@ -109,22 +109,22 @@ CAutoRWLock::CAutoRWLock(CRWLock* pLock, bool bRLock)
 
 CAutoRWLock::~CAutoRWLock()
 {
-    if(NULL != m_pLock)
+    if (NULL != m_pLock)
     {
         m_pLock->unlock();
     }
 }
 #endif
 
-CAutoLock::CAutoLock(CLock* pLock)
+CAutoLock::CAutoLock(CLock *pLock)
 {
     m_pLock = pLock;
-    if(NULL != m_pLock)
+    if (NULL != m_pLock)
         m_pLock->lock();
 }
 
 CAutoLock::~CAutoLock()
 {
-    if(NULL != m_pLock)
+    if (NULL != m_pLock)
         m_pLock->unlock();
 }

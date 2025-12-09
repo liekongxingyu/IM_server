@@ -17,17 +17,18 @@
 #include <curl/curl.h>
 #include "public_define.h"
 
+// 用来在程序里发 HTTP 请求，并把服务器返回的数据收集起来（文本或二进制）
 class CHttpClient
 {
 public:
     CHttpClient(void);
     ~CHttpClient(void);
-    
+
 public:
-    CURLcode Post(const string & strUrl, const string & strPost, string & strResponse);
-    CURLcode Get(const string & strUrl, string & strResponse);
-    string UploadByteFile(const string &url, void* data, int data_len);
-    bool DownloadByteFile(const string &url, AudioMsgInfo* pAudioMsg);
+    CURLcode Post(const string &strUrl, const string &strPost, string &strResponse);
+    CURLcode Get(const string &strUrl, string &strResponse);
+    string UploadByteFile(const string &url, void *data, int data_len);
+    bool DownloadByteFile(const string &url, AudioMsgInfo *pAudioMsg);
 };
 
 #endif

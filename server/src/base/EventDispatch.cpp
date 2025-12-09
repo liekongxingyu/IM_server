@@ -1,13 +1,13 @@
 #include "EventDispatch.h"
 #include "BaseSocket.h"
 
-#define MIN_TIMER_DURATION	100	// 100 miliseconds
+#define MIN_TIMER_DURATION 100 // 100 miliseconds
 
-CEventDispatch* CEventDispatch::m_pEventDispatch = NULL;
+CEventDispatch *CEventDispatch::m_pEventDispatch = NULL;
 
 CEventDispatch::CEventDispatch()
 {
-    running = false;
+	running = false;
 #ifdef _WIN32
 	FD_ZERO(&m_read_set);
 	FD_ZERO(&m_write_set);
@@ -38,12 +38,13 @@ CEventDispatch::~CEventDispatch()
 #endif
 }
 
-void CEventDispatch::AddTimer(callback_t callback, void* user_data, uint64_t interval)
+// 注册或更新定时器
+void CEventDispatch::AddTimer(callback_t callback, void *user_data, uint64_t interval)
 {
-	list<TimerItem*>::iterator it;
+	list<TimerItem *>::iterator it;
 	for (it = m_timer_list.begin(); it != m_timer_list.end(); it++)
 	{
-		TimerItem* pItem = *it;
+		TimerItem *pItem = *it;
 		if (pItem->callback == callback && pItem->user_data == user_data)
 		{
 			pItem->interval = interval;
@@ -52,7 +53,7 @@ void CEventDispatch::AddTimer(callback_t callback, void* user_data, uint64_t int
 		}
 	}
 
-	TimerItem* pItem = new TimerItem;
+	TimerItem *pItem = new TimerItem;
 	pItem->callback = callback;
 	pItem->user_data = user_data;
 	pItem->interval = interval;
@@ -60,12 +61,13 @@ void CEventDispatch::AddTimer(callback_t callback, void* user_data, uint64_t int
 	m_timer_list.push_back(pItem);
 }
 
-void CEventDispatch::RemoveTimer(callback_t callback, void* user_data)
+
+void CEventDispatch::RemoveTimer(callback_t callback, void *user_data)
 {
-	list<TimerItem*>::iterator it;
+	list<TimerItem *>::iterator it;
 	for (it = m_timer_list.begin(); it != m_timer_list.end(); it++)
 	{
-		TimerItem* pItem = *it;
+		TimerItem *pItem = *it;
 		if (pItem->callback == callback && pItem->user_data == user_data)
 		{
 			m_timer_list.erase(it);
@@ -78,12 +80,12 @@ void CEventDispatch::RemoveTimer(callback_t callback, void* user_data)
 void CEventDispatch::_CheckTimer()
 {
 	uint64_t curr_tick = get_tick_count();
-	list<TimerItem*>::iterator it;
+	list<TimerItem *>::iterator it;
 
-	for (it = m_timer_list.begin(); it != m_timer_list.end(); )
+	for (it = m_timer_list.begin(); it != m_timer_list.end();)
 	{
-		TimerItem* pItem = *it;
-		it++;		// iterator maybe deleted in the callback, so we should increment it before callback
+		TimerItem *pItem = *it;
+		it++; // iterator maybe deleted in the callback, so we should increment it before callback
 		if (curr_tick >= pItem->next_tick)
 		{
 			pItem->next_tick += pItem->interval;
@@ -92,23 +94,24 @@ void CEventDispatch::_CheckTimer()
 	}
 }
 
-void CEventDispatch::AddLoop(callback_t callback, void* user_data)
+void CEventDispatch::AddLoop(callback_t callback, void *user_data)
 {
-    TimerItem* pItem = new TimerItem;
-    pItem->callback = callback;
-    pItem->user_data = user_data;
-    m_loop_list.push_back(pItem);
+	TimerItem *pItem = new TimerItem;
+	pItem->callback = callback;
+	pItem->user_data = user_data;
+	m_loop_list.push_back(pItem);
 }
 
 void CEventDispatch::_CheckLoop()
 {
-    for (list<TimerItem*>::iterator it = m_loop_list.begin(); it != m_loop_list.end(); it++) {
-        TimerItem* pItem = *it;
-        pItem->callback(pItem->user_data, NETLIB_MSG_LOOP, 0, NULL);
-    }
+	for (list<TimerItem *>::iterator it = m_loop_list.begin(); it != m_loop_list.end(); it++)
+	{
+		TimerItem *pItem = *it;
+		pItem->callback(pItem->user_data, NETLIB_MSG_LOOP, 0, NULL);
+	}
 }
 
-CEventDispatch* CEventDispatch::Instance()
+CEventDispatch *CEventDispatch::Instance()
 {
 	if (m_pEventDispatch == NULL)
 	{
@@ -128,7 +131,7 @@ void CEventDispatch::AddEvent(SOCKET fd, uint8_t socket_event)
 	{
 		FD_SET(fd, &m_read_set);
 	}
-		
+
 	if ((socket_event & SOCKET_WRITE) != 0)
 	{
 		FD_SET(fd, &m_write_set);
@@ -165,16 +168,16 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 	fd_set read_set, write_set, excep_set;
 	timeval timeout;
 	timeout.tv_sec = 0;
-	timeout.tv_usec = wait_timeout * 1000;	// 10 millisecond
+	timeout.tv_usec = wait_timeout * 1000; // 10 millisecond
 
-    if(running)
-        return;
-    running = true;
-    
-    while (running)
+	if (running)
+		return;
+	running = true;
+
+	while (running)
 	{
 		_CheckTimer();
-        _CheckLoop();
+		_CheckLoop();
 
 		if (!m_read_set.fd_count && !m_write_set.fd_count && !m_excep_set.fd_count)
 		{
@@ -194,7 +197,7 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 		{
 			log_error("select failed, error code: %d", GetLastError());
 			Sleep(MIN_TIMER_DURATION);
-			continue;			// select again
+			continue; // select again
 		}
 
 		if (nfds == 0)
@@ -204,9 +207,9 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 
 		for (u_int i = 0; i < read_set.fd_count; i++)
 		{
-			//log("select return read count=%d\n", read_set.fd_count);
+			// log("select return read count=%d\n", read_set.fd_count);
 			SOCKET fd = read_set.fd_array[i];
-			CBaseSocket* pSocket = FindBaseSocket((net_handle_t)fd);
+			CBaseSocket *pSocket = FindBaseSocket((net_handle_t)fd);
 			if (pSocket)
 			{
 				pSocket->OnRead();
@@ -216,9 +219,9 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 
 		for (u_int i = 0; i < write_set.fd_count; i++)
 		{
-			//log("select return write count=%d\n", write_set.fd_count);
+			// log("select return write count=%d\n", write_set.fd_count);
 			SOCKET fd = write_set.fd_array[i];
-			CBaseSocket* pSocket = FindBaseSocket((net_handle_t)fd);
+			CBaseSocket *pSocket = FindBaseSocket((net_handle_t)fd);
 			if (pSocket)
 			{
 				pSocket->OnWrite();
@@ -228,22 +231,21 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 
 		for (u_int i = 0; i < excep_set.fd_count; i++)
 		{
-			//log("select return exception count=%d\n", excep_set.fd_count);
+			// log("select return exception count=%d\n", excep_set.fd_count);
 			SOCKET fd = excep_set.fd_array[i];
-			CBaseSocket* pSocket = FindBaseSocket((net_handle_t)fd);
+			CBaseSocket *pSocket = FindBaseSocket((net_handle_t)fd);
 			if (pSocket)
 			{
 				pSocket->OnClose();
 				pSocket->ReleaseRef();
 			}
 		}
-
 	}
 }
 
 void CEventDispatch::StopDispatch()
 {
-    running = false;
+	running = false;
 }
 
 #elif __APPLE__
@@ -290,30 +292,30 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 	timeout.tv_sec = 0;
 	timeout.tv_nsec = wait_timeout * 1000000;
 
-    if(running)
-        return;
-    running = true;
-    
-    while (running)
+	if (running)
+		return;
+	running = true;
+
+	while (running)
 	{
 		nfds = kevent(m_kqfd, NULL, 0, events, 1024, &timeout);
 
 		for (int i = 0; i < nfds; i++)
 		{
 			int ev_fd = events[i].ident;
-			CBaseSocket* pSocket = FindBaseSocket(ev_fd);
+			CBaseSocket *pSocket = FindBaseSocket(ev_fd);
 			if (!pSocket)
 				continue;
 
 			if (events[i].filter == EVFILT_READ)
 			{
-				//log("OnRead, socket=%d\n", ev_fd);
+				// log("OnRead, socket=%d\n", ev_fd);
 				pSocket->OnRead();
 			}
 
 			if (events[i].filter == EVFILT_WRITE)
 			{
-				//log("OnWrite, socket=%d\n", ev_fd);
+				// log("OnWrite, socket=%d\n", ev_fd);
 				pSocket->OnWrite();
 			}
 
@@ -321,13 +323,13 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 		}
 
 		_CheckTimer();
-        _CheckLoop();
+		_CheckLoop();
 	}
 }
 
 void CEventDispatch::StopDispatch()
 {
-    running = false;
+	running = false;
 }
 
 #else
@@ -356,45 +358,45 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 	struct epoll_event events[1024];
 	int nfds = 0;
 
-    if(running)
-        return;
-    running = true;
-    
+	if (running)
+		return;
+	running = true;
+
 	while (running)
 	{
 		nfds = epoll_wait(m_epfd, events, 1024, wait_timeout);
 		for (int i = 0; i < nfds; i++)
 		{
 			int ev_fd = events[i].data.fd;
-			CBaseSocket* pSocket = FindBaseSocket(ev_fd);
+			CBaseSocket *pSocket = FindBaseSocket(ev_fd);
 			if (!pSocket)
 				continue;
-            
-            //Commit by zhfu @2015-02-28
-            #ifdef EPOLLRDHUP
-            if (events[i].events & EPOLLRDHUP)
-            {
-                //log("On Peer Close, socket=%d, ev_fd);
-                pSocket->OnClose();
-            }
-            #endif
-            // Commit End
+
+// Commit by zhfu @2015-02-28
+#ifdef EPOLLRDHUP
+			if (events[i].events & EPOLLRDHUP)
+			{
+				// log("On Peer Close, socket=%d, ev_fd);
+				pSocket->OnClose();
+			}
+#endif
+			// Commit End
 
 			if (events[i].events & EPOLLIN)
 			{
-				//log("OnRead, socket=%d\n", ev_fd);
+				// log("OnRead, socket=%d\n", ev_fd);
 				pSocket->OnRead();
 			}
 
 			if (events[i].events & EPOLLOUT)
 			{
-				//log("OnWrite, socket=%d\n", ev_fd);
+				// log("OnWrite, socket=%d\n", ev_fd);
 				pSocket->OnWrite();
 			}
 
 			if (events[i].events & (EPOLLPRI | EPOLLERR | EPOLLHUP))
 			{
-				//log("OnClose, socket=%d\n", ev_fd);
+				// log("OnClose, socket=%d\n", ev_fd);
 				pSocket->OnClose();
 			}
 
@@ -402,14 +404,13 @@ void CEventDispatch::StartDispatch(uint32_t wait_timeout)
 		}
 
 		_CheckTimer();
-        _CheckLoop();
+		_CheckLoop();
 	}
 }
 
 void CEventDispatch::StopDispatch()
 {
-    running = false;
+	running = false;
 }
-
 
 #endif

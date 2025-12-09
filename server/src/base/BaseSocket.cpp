@@ -21,6 +21,7 @@ CBaseSocket *FindBaseSocket(net_handle_t fd)
 	if (iter != g_socket_map.end())
 	{
 		pSocket = iter->second;
+		// 找到后引用计数会+1
 		pSocket->AddRef();
 	}
 
@@ -101,6 +102,7 @@ net_handle_t CBaseSocket::Connect(const char *server_ip, uint16_t port, callback
 		return NETLIB_INVALID_HANDLE;
 	}
 
+	// 设置为非阻塞
 	_SetNonblock(m_socket);
 	_SetNoDelay(m_socket);
 	sockaddr_in serv_addr;
@@ -113,6 +115,7 @@ net_handle_t CBaseSocket::Connect(const char *server_ip, uint16_t port, callback
 		return NETLIB_INVALID_HANDLE;
 	}
 	m_state = SOCKET_STATE_CONNECTING;
+	// 加入全局维护列表
 	AddBaseSocket(this);
 	CEventDispatch::Instance()->AddEvent(m_socket, SOCKET_ALL);
 
@@ -235,6 +238,7 @@ void CBaseSocket::SetSendBufSize(uint32_t send_size)
 
 void CBaseSocket::SetRecvBufSize(uint32_t recv_size)
 {
+	// 设置内核接受缓冲区
 	int ret = setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, &recv_size, 4);
 	if (ret == SOCKET_ERROR)
 	{
@@ -279,6 +283,7 @@ void CBaseSocket::_SetNonblock(SOCKET fd)
 	}
 }
 
+// 允许端口快速复用
 void CBaseSocket::_SetReuseAddr(SOCKET fd)
 {
 	int reuse = 1;
@@ -299,6 +304,7 @@ void CBaseSocket::_SetNoDelay(SOCKET fd)
 	}
 }
 
+// 把字符串地址变成socket地址结构
 void CBaseSocket::_SetAddr(const char *ip, const uint16_t port, sockaddr_in *pAddr)
 {
 	memset(pAddr, 0, sizeof(sockaddr_in));

@@ -5,6 +5,8 @@
  *      Author: ziteng@mogujie.com
  */
 
+// 提供了一个通用的“多后端连接池 + 自动重连（指数退避）”框架：你只要定义一个连接类 T : CImConn，就能用它一键初始化、定时检查重连、断开时重置退避策略
+
 #ifndef SERVINFO_H_
 #define SERVINFO_H_
 

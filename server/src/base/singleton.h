@@ -9,6 +9,7 @@
 #ifndef BASE_SINGLETON_H_
 #define BASE_SINGLETON_H_
 
+// 保证某个类型 T 在进程里最多只创建一个对象，并提供全局访问入口
 template<typename T>
 class Singleton  {
 public:
